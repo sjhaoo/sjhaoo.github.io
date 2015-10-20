@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+![image](http://photo.blog.sina.com.cn/showpic.html#blogid=5b5460eb0100gwml&url=http://s3.sinaimg.cn/orignal/5b5460ebg9a173333cfa2)
+
+<pre><code>
+CREATE TABLE Table_Type
+(
+ id INTEGER NOT NULL AUTO_INCREMENT,
+ parent_id INTEGER,
+ node VARCHAR(255),
+ PRIMARY KEY (id)
+)
+</code></pre>
+
+ 紫色的是数据记录的ID号，框内的数字是每条记录的node字段，记录了该记录的父ID和父ID的父ID和...
+这样，假如我们要在ID为7的记录下，插入一条新ID为13的记录，新记录的node就是1,2,7,13
+要找一个节点下的所有子节点，就无需用递归，只要一个SQL。
+如“查ID为2记录下所有子节点”
+select * from Table_Types where node like "1,2,%"
+如“删除ID为2记录下所有子节点”
+delete from Table_Types where node like "1,2"
+即同时删除此节点和它的所有子节点
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<p><img src="http://photo.blog.sina.com.cn/showpic.html#blogid=5b5460eb0100gwml&amp;url=http://s3.sinaimg.cn/orignal/5b5460ebg9a173333cfa2" alt="image" title=""></p>
+
+<pre><code>
+CREATE TABLE Table_Type
+(
+ id INTEGER NOT NULL AUTO_INCREMENT,
+ parent_id INTEGER,
+ node VARCHAR(255),
+ PRIMARY KEY (id)
+)
+</code></pre>
+
+<p>紫色的是数据记录的ID号，框内的数字是每条记录的node字段，记录了该记录的父ID和父ID的父ID和...
+这样，假如我们要在ID为7的记录下，插入一条新ID为13的记录，新记录的node就是1,2,7,13
+要找一个节点下的所有子节点，就无需用递归，只要一个SQL。
+如“查ID为2记录下所有子节点”
+select * from Table<em>Types where node like "1,2,%"
+如“删除ID为2记录下所有子节点”
+delete from Table</em>Types where node like "1,2"
+即同时删除此节点和它的所有子节点</p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "201510202354.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
